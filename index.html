@@ -421,6 +421,19 @@
   .msg.redpacket .rp-top{ font-size:12px; opacity:.9; }
   .msg.redpacket .rp-amount{ font-size:21px; font-weight:900; margin-top:4px; }
   .msg.redpacket .rp-tap{ font-size:12px; margin-top:6px; opacity:.85; border-top:1px dashed rgba(255,255,255,0.4); padding-top:6px; }
+.msg.questionnaire{
+  background:#fff; border:1.5px solid #1a1a1a; border-radius:16px; padding:12px 14px; max-width:92%;
+}
+.msg.questionnaire .q-title{ font-family:'Noto Serif SC',serif; font-weight:700; font-size:13.5px; color:var(--rouge); margin-bottom:8px; }
+.msg.questionnaire .q-question{ font-size:13.5px; line-height:1.5; margin-bottom:10px; }
+.msg.questionnaire .q-option{
+  display:block; border:1px solid var(--rule); border-radius:10px; padding:7px 10px; margin:5px 0; font-size:12.5px;
+  background:var(--paper-2);
+}
+.msg.questionnaire .q-option.chosen{ border-color:var(--rouge); background:var(--blush); font-weight:700; }
+.msg.questionnaire .q-meta{ font-size:11px; color:var(--ink-soft); margin-top:8px; }
+.msg.questionnaire .q-waiting{ font-size:11.5px; color:var(--ink-soft); margin-top:6px; font-style:italic; }
+
 .typing{ 
   align-self:flex-start; 
   font-size:11.5px; 
@@ -593,7 +606,7 @@
       <div class="cr-profile-unit">
         <div class="cr-avatar" id="annivMyAvatar" onclick="document.getElementById('myAvatarFileInput').click()">🙂</div>
         <div class="cr-profile-name" id="crMyName">我</div>
-        <div class="cr-status-pill" onclick="editMomentsBio()" role="button" tabindex="0"><span class="cr-status-dot me"></span><span class="cr-profile-status" id="crMyStatus">今天也在发光</span></div>
+        <div class="cr-status-pill" onclick="editMyStatus()" role="button" tabindex="0"><span class="cr-status-dot me"></span><span class="cr-profile-status" id="crMyStatus">今天也在发光</span></div>
       </div>
     </div>
 
@@ -616,17 +629,15 @@
 
     <div class="cr-section-title"><span>OUR LITTLE UNIVERSE</span><i>✦</i></div>
     <div class="cr-grid">
-      <div class="cr-item" onclick="go('chat')"><div class="cr-icon">💬<span id="chatDot" class="cr-badge hidden"></span></div><div class="cr-label">Murphy传讯</div></div>
+      <div class="cr-item" onclick="go('chat')"><div class="cr-icon">💬<span id="chatDot" class="cr-badge hidden"></span></div><div class="cr-label">传讯</div></div>
       <div class="cr-item" onclick="go('moments')"><div class="cr-icon">🌐<span id="momentsDot" class="cr-badge hidden"></span></div><div class="cr-label">朋友圈</div></div>
       <div class="cr-item" onclick="go('letters')"><div class="cr-icon">✉️<span id="letterDot" class="cr-badge hidden"></span></div><div class="cr-label">写信</div></div>
       <div class="cr-item" onclick="go('inboxLetters')"><div class="cr-icon">💌<span id="inboxLetterDot" class="cr-badge hidden"></span></div><div class="cr-label">来信</div></div>
       <div class="cr-item" onclick="go('lifephotos')"><div class="cr-icon">📷</div><div class="cr-label">生活照片</div></div>
       <div class="cr-item" onclick="go('cards')"><div class="cr-icon">🎴</div><div class="cr-label">字卡</div></div>
-      <div class="cr-item" onclick="openMoyuNotePanel()"><div class="cr-icon">📝</div><div class="cr-label">摸鱼小记</div></div>
       <div class="cr-item" onclick="openTodayStatusPanel()"><div class="cr-icon">🎬</div><div class="cr-label">今日状态</div></div>
       <div class="cr-item" onclick="go('ledger')"><div class="cr-icon">💰</div><div class="cr-label">记账</div></div>
       <div class="cr-item" onclick="go('companion')"><div class="cr-icon">📋</div><div class="cr-label">陪伴记录</div></div>
-      <div class="cr-item" onclick="go('recipe')"><div class="cr-icon">🔮</div><div class="cr-label">占卜</div></div>
       <div class="cr-item" onclick="go('settings')"><div class="cr-icon">⚙️</div><div class="cr-label">设置</div></div>
     </div>
 
@@ -693,6 +704,7 @@
           <div class="cname" id="chatCName">Charlie</div>
           <div class="cstat" id="chatCStat" onclick="openTodayStatusPanel()" style="cursor:pointer;">在线</div>
         </div>
+        <div class="mini-btn" style="width:32px;height:32px;font-size:14px;" onclick="openQuestionnaireComposer()" title="梦向问卷">📋</div>
         <div class="mini-btn" style="width:32px;height:32px;font-size:14px;" onclick="openGesturePicker()" title="小动作">👋</div>
         <div class="mini-btn" style="width:32px;height:32px;font-size:14px;" onclick="openWebLinkComposer()" title="发送网页链接">🔗</div>
         <div class="mini-btn" style="width:32px;height:32px;font-size:14px;" onclick="triggerProactiveMessage()" title="让TA主动找我">💌</div>
@@ -800,7 +812,6 @@
       <div class="box-title">数据管理</div>
       <p style="font-size:12px;color:var(--ink-soft);">所有数据会自动保存。如果遇到刷新后数据丢失的情况，可以用下面的备份功能手动导出/恢复，更保险。</p>
       <div class="btn-row">
-        <div class="btn outline" onclick="openAiConfigPanel()">🤖 AI 解读配置</div>
         <div class="btn outline" onclick="exportBackup()">📤 导出备份文件</div>
         <div class="btn outline" onclick="document.getElementById('backupFileInput').click()">📥 导入备份恢复</div>
       </div>
@@ -882,45 +893,6 @@
         <div class="btn outline" onclick="clearCustomBubbleCSS()">恢复默认气泡</div>
       </div>
     </div>
-  </section>
-
-  <!-- ============ RECIPE 食谱 ============ -->
-  <section id="view-recipe" class="view hidden">
-    <div class="view-head"><div class="icon-btn" onclick="go('home')">←</div><h2>占卜抽牌</h2>
-      <div class="icon-btn" style="margin-left:auto;" onclick="openAiConfigPanel()" title="AI配置">🤖</div>
-    </div>
-    <div class="box">
-      <p style="font-size:12.5px;color:var(--ink-soft);margin:0 0 10px;">洗牌后按牌阵抽取（不放回），先显示每张牌的客观牌意；抽完后可以点下面的按钮让 AI 解读，随时可以在「角色语气」和「客观语气」之间切换重新生成。</p>
-      <label class="field">牌组</label>
-      <select id="divDeckType" onchange="onDivDeckChange()">
-        <option value="tarot78">塔罗 78 张（大阿卡纳 + 小阿卡纳）</option>
-        <option value="lenormand36">雷诺曼 36 张</option>
-      </select>
-      <label class="field">牌阵</label>
-      <select id="divSpread">
-        <option value="1">单张牌 · 核心指引</option>
-        <option value="3" selected>三张牌 · 过去/现在/未来</option>
-        <option value="5">五张牌 · 更细分析</option>
-      </select>
-      <label class="field">你的问题（可选）</label>
-      <textarea id="tarotQuestion" placeholder="例如：我想知道 TA 对这件事怎么看？" style="min-height:64px;"></textarea>
-      <div class="btn-row">
-        <div class="btn outline" onclick="shuffleDivDeck()">🔀 重新洗牌</div>
-        <div class="btn rouge" onclick="drawTarotSpread()">✨ 开始占卜</div>
-      </div>
-      <div id="divDeckStatus" style="font-size:11.5px;color:var(--ink-soft);margin-top:8px;"></div>
-      <div class="btn-row" style="margin-top:8px;">
-        <div class="btn outline" onclick="openAiConfigPanel()">🤖 AI 配置</div>
-        <div class="btn outline" onclick="go('divHistory')">🕮 占卜历史</div>
-      </div>
-    </div>
-    <div id="tarotResult"></div>
-  </section>
-
-  <!-- ============ DIV HISTORY 占卜历史 ============ -->
-  <section id="view-divHistory" class="view hidden">
-    <div class="view-head"><div class="icon-btn" onclick="go('recipe')">←</div><h2>占卜历史</h2></div>
-    <div id="divHistoryList"></div>
   </section>
 
   <!-- ============ DIARY 日记 ============ -->
@@ -1305,7 +1277,7 @@ function uid(){ return Math.random().toString(36).slice(2,10)+Date.now().toStrin
 /* ============================================================
    STATE
    ============================================================ */
-let profile = { name:'Charlie', status:'Status: 跌入你的宇宙 ☆°｡', avatar:'🌙', photo:null, myName:'我', myAvatar:'🙂', myBio:'', momentsCover:null, anniversaryDate:null };
+let profile = { name:'Charlie', status:'Status: 跌入你的宇宙 ☆°｡', avatar:'🌙', photo:null, myName:'我', myAvatar:'🙂', myStatus:'今天也在发光', myBio:'', momentsCover:null, anniversaryDate:null };
 let chatSettings = { companionName:'Charlie', delayMin:1, delayMax:5, readNoReply:false, background:null, stickers:[
   {id:'e1', type:'emoji', value:'🌙'}, {id:'e2', type:'emoji', value:'☕'}, {id:'e3', type:'emoji', value:'📖'}
 ]};
@@ -1314,7 +1286,6 @@ let cardsData = { groups:{} };
 let ledgerEntries = [];
 let periodEntries = [];
 let diaryEntries = [];
-let recipeEntries = [];
 let momentsPosts = [];
 let momentEvents = []; // 朋友圈"待触发事件"队列（点赞/评论、回评论），持久化存储，靠轮询检查而非setTimeout，防止长延迟跨设备/跨刷新失效
 let momentDraftMedia = null;
@@ -1379,8 +1350,6 @@ async function init(){
   periodEntries = await sGet('period-entries', []);
   await loadCompanionData();
   diaryEntries = await sGet('diary-entries', []);
-  recipeEntries = await sGet('recipe-entries', []);
-  tarotHistory = await sGet('tarot-history', []);
   momentsPosts = await loadInitialPage('momentsPosts');
   momentEvents = await sGet('moment-events', []);
   letters = await sGet('letters', []);
@@ -1419,7 +1388,6 @@ async function init(){
     delete moyuState.records;
   }
   proactiveMsgSettings = await sGet('proactive-msg-settings', proactiveMsgSettings);
-  await loadAiSettings();
   // 兼容旧版，并限制在 1~300 分钟（5小时）
   if(typeof proactiveMsgSettings.minMinutes !== 'number' || typeof proactiveMsgSettings.maxMinutes !== 'number'){
     if(typeof proactiveMsgSettings.intervalMinutes === 'number'){
@@ -1465,7 +1433,6 @@ async function init(){
   renderCardsView();
   renderLedger();
   renderPeriod();
-  renderRecipes();
   renderDiary();
   renderBeautify();
   renderMoments();
@@ -1481,18 +1448,21 @@ async function init(){
   checkProactive();
   checkMomentEvents();
   checkMoyuTick();
+  checkQuestionnaireReplies();
   // 三个后台轮询合并为一个计时器，减少定时器数量；切到后台时不主动重绘，回到前台立即补检。
   setInterval(()=>{
     if(document.hidden) return;
     checkProactive();
     checkMomentEvents();
     checkMoyuTick();
+    checkQuestionnaireReplies();
   }, 20000);
   document.addEventListener('visibilitychange', ()=>{
     if(!document.hidden){
       checkProactive();
       checkMomentEvents();
       checkMoyuTick();
+      checkQuestionnaireReplies();
     }
   });
   const periodEl = document.getElementById('periodDate');
@@ -1505,7 +1475,7 @@ init();
 /* ============================================================
    NAV
    ============================================================ */
-const VIEW_TITLES = { home:'Charlie', chat:'传讯', cards:'字卡', ledger:'记账', period:'月经', companion:'陪伴记录', settings:'设置', recipe:'塔罗', divHistory:'占卜历史', diary:'日记', beautify:'美化', moments:'朋友圈', letters:'写信', inboxLetters:'来信', calls:'通话' };
+const VIEW_TITLES = { home:'Charlie', chat:'传讯', cards:'字卡', ledger:'记账', period:'月经', companion:'陪伴记录', settings:'设置', diary:'日记', beautify:'美化', moments:'朋友圈', letters:'写信', inboxLetters:'来信', calls:'通话' };
 function go(name){
   if(name==='beautify') name = 'settings'; // 美化已并入设置
   document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));
@@ -1539,8 +1509,6 @@ function go(name){
   }
   if(name==='ledger'){ renderLedger(); }
   if(name==='diary'){ renderDiary(); }
-  if(name==='recipe'){ renderRecipes(); }
-  if(name==='divHistory'){ renderDivHistoryList(); }
   if(name==='settings'){ renderBeautify(); if(typeof fillSettingsForm==='function') fillSettingsForm(); }
 }
 function renderUnreadDots(){
@@ -1562,7 +1530,7 @@ function renderHomeProfile(){
   const tn = document.getElementById('crTheirName'); if(tn) tn.textContent = profile.name || 'Charlie';
   const ts = document.getElementById('crTheirStatus'); if(ts) ts.textContent = todayStatus ? todayStatus.text : '暂无状态';
   const mn = document.getElementById('crMyName'); if(mn) mn.textContent = profile.myName || '我';
-  const ms = document.getElementById('crMyStatus'); if(ms) ms.textContent = profile.myBio || ' ';
+  const ms = document.getElementById('crMyStatus'); if(ms) ms.textContent = profile.myStatus || '今天也在发光';
   if(typeof renderMoyuHome === 'function') renderMoyuHome();
   const ph = document.getElementById('polaroidPh');
   if(ph) ph.innerHTML = profile.photo ? `<img loading="lazy" decoding="async" src="${profile.photo}">` : '点击上传';
@@ -1672,6 +1640,22 @@ function renderMomentsHeader(){
   if(nm) nm.textContent = profile.myName || '我';
   const bio = document.getElementById('momentsBioLabel');
   if(bio) bio.textContent = profile.myBio || '点这里写一句签名';
+}
+function editMyStatus(){
+  openOverlay(`
+    <div class="drawer-head"><h3>修改状态</h3><span class="close-x" onclick="closeOverlay()">✕</span></div>
+    <label class="field">状态</label>
+    <textarea id="editMyStatusInput" style="min-height:72px;">${(profile.myStatus||'').replace(/</g,'&lt;')}</textarea>
+    <div class="btn-row"><div class="btn" onclick="confirmMyStatus()">保存</div></div>
+  `);
+  setTimeout(()=>{ const el=document.getElementById('editMyStatusInput'); if(el) el.focus(); }, 50);
+}
+async function confirmMyStatus(){
+  const el = document.getElementById('editMyStatusInput');
+  profile.myStatus = (el && el.value || '').trim();
+  await sSet('profile', profile);
+  renderHomeProfile();
+  closeOverlay();
 }
 async function editMomentsBio(){
   openOverlay(`
@@ -2292,6 +2276,26 @@ function renderChat(preserveScroll, scrollToId){
         ${revealed ? `<div class="rp-amount">¥${Number(m.amount).toFixed(2)}</div>` : `<div class="rp-tap">点击查收</div>`}
         <div class="t" style="color:rgba(255,255,255,0.75);">${time}${quoteBtn}</div>
       </div>`;
+    } else if(m.type==='questionnaire'){
+      const opts = (m.options||[]).map((o,i)=>{
+        const chosen = m.answered && m.chosenOption === o;
+        return `<div class="q-option${chosen?' chosen':''}">${chosen?'✓ ':''}${o}</div>`;
+      }).join('');
+      let statusHtml = '';
+      if(m.answered){
+        statusHtml = `<div class="q-meta">已选择 · ${formatMsgTime(m.answerTime||m.time)}</div>`;
+      } else if(m.scheduledReplyAt){
+        const eta = new Date(m.scheduledReplyAt).toLocaleString('zh-CN');
+        statusHtml = `<div class="q-waiting">等待回复中…大概 ${eta} 前会选好</div>`;
+      }
+      bubbleHtml = `<div class="msg questionnaire ${m.from}">
+        ${quoteRefHtml}
+        <div class="q-title">📋 梦向问卷</div>
+        <div class="q-question">${m.question||''}</div>
+        ${opts}
+        ${statusHtml}
+        <div class="t">${time}${quoteBtn}</div>
+      </div>`;
     } else if(m.type==='weblink'){
       const collapsed = m.collapsed !== undefined ? m.collapsed : true;
       const host = getUrlHost(m.content);
@@ -2308,8 +2312,7 @@ function renderChat(preserveScroll, scrollToId){
     } else {
       const readTag = (m.from==='user' && m.read) ? ' · 已读' : '';
       const skinClass = m.from==='user' ? 'message message-sent' : 'message message-received';
-      const aiBtn = (m.from==='bot' || m.from!=='user') ? `<span class="quote-trigger" onclick="interpretCardMessage('${m.id}')" title="AI解读字卡">🤖解读</span>` : '';
-      bubbleHtml = `<div class="msg ${m.from} ${skinClass}">${quoteRefHtml}${m.content}<div class="t">${time}${readTag}${quoteBtn}${aiBtn}</div></div>`;
+      bubbleHtml = `<div class="msg ${m.from} ${skinClass}">${quoteRefHtml}${m.content}<div class="t">${time}${readTag}${quoteBtn}</div></div>`;
     }
     return `<div id="msg-${m.id}" class="msg-row ${m.from}">${avatarHtml}${bubbleHtml}</div>`;
   }).join('');
@@ -2373,6 +2376,8 @@ function buildQuotePreview(m){
   if(m.type==='redpacket') return '[红包]' + (m.note ? ('·'+m.note) : '');
   if(m.type==='image') return '[图片]';
   if(m.type==='weblink') return '[网页链接]';
+  if(m.type==='questionnaire') return '[问卷] ' + (m.question||'').slice(0,30);
+
   if(m.type==='pat' || m.type==='gesture') return m.content;
   return (m.content||'').slice(0,40);
 }
@@ -3141,6 +3146,111 @@ async function sendRedPacket(){
   handleIncomingForBot('[红包]');
 }
 
+/* ---- 梦向问卷：写问题 + 选项，发送给TA，TA在自定义1~23小时内随机选一个回复 ---- */
+function openQuestionnaireComposer(){
+  openOverlay(`
+    <div class="drawer-head"><h3>📋 梦向问卷</h3><span class="close-x" onclick="closeOverlay()">✕</span></div>
+    <p style="font-size:12px;color:var(--ink-soft);margin:0 0 10px;">写一个问题，给出几个选项。发送后 TA 会在你设定的时间范围内随机选一个选项回复你。</p>
+    <label class="field">问题</label>
+    <textarea id="qQuestion" placeholder="例如：今天想吃什么？" style="min-height:60px;"></textarea>
+    <label class="field">选项（至少 2 个，每行一个）</label>
+    <textarea id="qOptions" placeholder="每行一个选项，例如：&#10;奶茶&#10;咖啡&#10;果汁" style="min-height:90px;"></textarea>
+    <label class="field">最快回复：<span id="qMinHVal">1</span> 小时</label>
+    <input type="range" min="1" max="23" step="1" value="1" id="qMinH" oninput="document.getElementById('qMinHVal').textContent=this.value; syncQMax()" style="width:100%;">
+    <label class="field">最慢回复：<span id="qMaxHVal">12</span> 小时</label>
+    <input type="range" min="1" max="23" step="1" value="12" id="qMaxH" oninput="document.getElementById('qMaxHVal').textContent=this.value; syncQMin()" style="width:100%;">
+    <div style="font-size:11px;color:var(--ink-soft);margin-top:4px;">在最短～最长小时数之间纯随机挑一个时间点回复（1～23 小时）</div>
+    <div class="btn-row" style="margin-top:14px;"><div class="btn rouge" onclick="sendQuestionnaire()">发送问卷</div></div>
+  `);
+}
+function syncQMax(){
+  const minEl = document.getElementById('qMinH');
+  const maxEl = document.getElementById('qMaxH');
+  if(!minEl || !maxEl) return;
+  if(parseInt(maxEl.value,10) < parseInt(minEl.value,10)){
+    maxEl.value = minEl.value;
+    document.getElementById('qMaxHVal').textContent = maxEl.value;
+  }
+}
+function syncQMin(){
+  const minEl = document.getElementById('qMinH');
+  const maxEl = document.getElementById('qMaxH');
+  if(!minEl || !maxEl) return;
+  if(parseInt(minEl.value,10) > parseInt(maxEl.value,10)){
+    minEl.value = maxEl.value;
+    document.getElementById('qMinHVal').textContent = minEl.value;
+  }
+}
+async function sendQuestionnaire(){
+  const qEl = document.getElementById('qQuestion');
+  const oEl = document.getElementById('qOptions');
+  const question = (qEl && qEl.value || '').trim();
+  const options = (oEl && oEl.value || '').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  if(!question){ alert('请填写问题'); return; }
+  if(options.length < 2){ alert('至少需要 2 个选项'); return; }
+  let minH = parseInt((document.getElementById('qMinH')||{}).value,10) || 1;
+  let maxH = parseInt((document.getElementById('qMaxH')||{}).value,10) || 12;
+  minH = Math.max(1, Math.min(23, minH));
+  maxH = Math.max(minH, Math.min(23, maxH));
+  const delayMs = randomBetween(minH * 3600 * 1000, maxH * 3600 * 1000);
+  const scheduledReplyAt = Date.now() + delayMs;
+  const msg = {
+    id: uid(),
+    from: 'user',
+    type: 'questionnaire',
+    question,
+    options,
+    time: Date.now(),
+    read: false,
+    answered: false,
+    chosenOption: null,
+    answerTime: null,
+    scheduledReplyAt,
+    minH, maxH
+  };
+  if(quoteTarget){ msg.quoteOf = quoteTarget; clearQuoteTarget(); }
+  chatMessages.push(msg);
+  await recPut('chatMessages', msg);
+  renderChat();
+  closeOverlay();
+  // 不走普通自动回复，等定时检查来处理问卷选择
+}
+async function checkQuestionnaireReplies(){
+  const now = Date.now();
+  let changed = false;
+  for(const m of chatMessages){
+    if(m.type !== 'questionnaire' || m.answered || !m.scheduledReplyAt) continue;
+    if(m.scheduledReplyAt > now) continue;
+    // 到期：随机选一个选项
+    const opts = m.options || [];
+    if(!opts.length) continue;
+    const chosen = opts[Math.floor(Math.random() * opts.length)];
+    m.answered = true;
+    m.chosenOption = chosen;
+    m.answerTime = Date.now();
+    m.read = true;
+    await recPut('chatMessages', m);
+    // 发一条 bot 回复消息
+    const replyText = `我选了「${chosen}」`;
+    const replyMsg = {
+      id: uid(),
+      from: 'bot',
+      type: 'text',
+      content: replyText,
+      time: Date.now(),
+      read: true,
+      quoteOf: { id: m.id, from: 'user', preview: '[问卷] ' + (m.question||'').slice(0,30) }
+    };
+    chatMessages.push(replyMsg);
+    await recPut('chatMessages', replyMsg);
+    changed = true;
+  }
+  if(changed){
+    if(currentView === 'chat'){ renderChat(); }
+    else { chatUnread = true; await sSet('chat-unread', true); renderUnreadDots(); }
+  }
+}
+
 /* ============================================================
    LEDGER
    ============================================================ */
@@ -3291,315 +3401,6 @@ function renderPeriod(){
   const next = new Date(last.getTime() + avgCycle*86400000);
   predictBox.innerHTML = `平均周期约 <b>${avgCycle}</b> 天，预测下次开始日期：<b style="color:var(--rouge)">${next.toISOString().slice(0,10)}</b>`;
 }
-
-/* ============================================================
-   RECIPE
-   ============================================================ */
-/* ============================================================
-   占卜：塔罗 78 / 雷诺曼 36 —— 洗牌后纯随机抽三张（不放回）
-   ============================================================ */
-function buildTarot78(){
-  const major = [
-    ['愚者','🃏','新的开始，怀抱信任与好奇心迈出未知的一步；心态轻盈，愿意冒险尝试。','行动前的犹豫、鲁莽冒进或害怕承担后果而裹足不前；也提醒你没找到自由与责任的平衡。'],
-    ['魔术师','🪄','手上已具备需要的资源与能力，重点在于集中意志、主动出击，把想法落地成行动。','才华被浪费、三心二意或有所隐瞒；也可能是明明有能力却不敢施展的自我怀疑。'],
-    ['女祭司','🌙','倾听直觉与潜意识的低语，先沉淀、观察，不急于表态，答案往往在静默中浮现。','忽视内心声音、过度理性化情绪，或对真相选择回避；也暗示信息尚未完全浮出水面。'],
-    ['女皇','🌸','丰盛、滋养与创造力的展现，感情与生活都在被温柔地照料着，适合让爱与美自然流淌。','过度付出导致耗竭、依赖他人肯定，或创造力被压抑；也反映对自我价值感的怀疑。'],
-    ['皇帝','👑','建立秩序、划定边界，用稳固的结构和责任感撑起局面，理性主导胜过情绪化。','控制欲过强、固执僵化，或权威结构正在松动；也可能是缺乏纪律、方向感缺失。'],
-    ['教皇','📿','依循传统、寻求可信赖的指引，从既有的智慧、制度或值得信任的人身上获得支持。','质疑教条、打破常规寻找自己的路，也提示墨守成规带来的束缚感。'],
-    ['恋人','💕','一次重要的选择或联结，诚实面对自己的心意，让关系建立在真实而非将就之上。','关系中的错位、犹豫不决或价值观冲突；也可能是逃避一个必须做出的选择。'],
-    ['战车','🏎️','意志力清晰、目标明确，凭借决心与掌控力排除干扰、勇往直前。','方向失控、内耗严重或过于急躁冒进；也可能是外部阻力让前进停滞。'],
-    ['力量','🦁','以温柔而坚定的方式驯服内心的恐惧与冲动，真正的力量来自耐心与自我接纳。','自我怀疑、情绪失控或压抑真实感受；也可能是滥用强硬手段而非柔性引导。'],
-    ['隐者','🏮','退回内在，独处沉思，给答案和洞见留出浮现的时间，无需急着向外求助。','过度孤立、逃避人群，或是该走出封闭、主动寻求连接的时候了。'],
-    ['命运之轮','🎡','周期性的转折正在发生，顺应变化的节奏，把握机运比强行掌控更有效。','感觉运气不站在自己这边、变化带来阻滞，或是抗拒不可避免的转变。'],
-    ['正义','⚖️','因果分明，诚实面对事实并做出公正的决定，一切都会得到应有的清算。','不公平、逃避责任或决策失衡；也可能是尚未看清全貌就妄下判断。'],
-    ['倒吊人','🙃','换一个角度看问题，主动的等待和暂停本身也是一种酝酿与蓄力。','无谓的牺牲、停滞不前带来的焦躁，或是抗拒必要的暂停与放手。'],
-    ['死神','🦋','一个阶段的结束为新事物腾出空间，放手旧模式才能让转化真正发生。','抗拒改变、执着于已经结束的关系或阶段，导致停滞与内耗。'],
-    ['节制','🍷','在两个极端之间寻求平衡与调和，耐心地把冲突的部分慢慢融合成新的整体。','失衡、过度或不足，缺乏耐心导致的冲突与不协调。'],
-    ['恶魔','⛓️','看清自己被什么样的执念、欲望或关系模式所束缚，直面阴影才能松开枷锁。','开始挣脱束缚、觉察到有害的依附关系，迈出解放自己的第一步。'],
-    ['塔','⚡','突如其来的震动打破了虚假的稳固，让被掩盖的真相浮出水面，随后才能重建。','逃避不可避免的崩塌、恐惧改变，或是余震未平、还在消化冲击。'],
-    ['星星','⭐','风暴过后重新燃起的希望与信任，温柔地疗愈自己，相信更好的正在靠近。','信心受挫、对未来感到迷茫，或是希望被现实一再消磨。'],
-    ['月亮','🌕','直觉活跃但真相朦胧不清，容易被情绪、幻觉或未知的恐惧牵着走，需谨慎分辨。','幻象逐渐澄清、隐藏的焦虑浮出水面，也可能是走出了一段困惑期。'],
-    ['太阳','☀️','明朗、喜悦与真实的成功，允许自己毫无保留地感受被看见的快乐。','短暂的阴霾遮住了本该有的光彩，也可能是过度乐观而忽略了细节。'],
-    ['审判','📯','一次觉醒的召唤，回顾过去做出总结，回应内心真正想要奔赴的方向。','自我评判过重、逃避该有的反思，或是难以放下过去的遗憾。'],
-    ['世界','🌍','一个完整周期的圆满收束，努力得到确认，也意味着新阶段即将展开。','事情尚未真正完结、缺乏收尾感，或是达成目标后仍感觉空虚。']
-  ].map(([name,emoji,mean,rmean])=>({ name, emoji, mean, rmean, suit:'大阿卡纳' }));
-
-  const suits = [
-    { suit:'权杖', emoji:'🔥', theme:'行动、热情、创造', rtheme:'行动受阻、冲动内耗或热情消退' },
-    { suit:'圣杯', emoji:'💧', theme:'情感、关系、直觉', rtheme:'情感淤堵、逃避感受或自我怀疑' },
-    { suit:'宝剑', emoji:'⚔️', theme:'思维、冲突、真相', rtheme:'思维混乱、言语伤人或过度防御' },
-    { suit:'星币', emoji:'🪙', theme:'物质、身体、现实', rtheme:'现实卡顿、匮乏焦虑或过度执着物质' }
-  ];
-  const ranks = [
-    ['王牌','全新的种子与潜能，一个纯粹而强烈的开端。','起步受阻、错失良机，或是能量还未准备好释放。'],
-    ['二','面临对峙或选择，需要在两者之间权衡取舍。','犹豫不决、关系失衡，或是逃避该做的决定。'],
-    ['三','初步的成果显现，合作与表达带来正向反馈。','团队摩擦、成果被延误，或缺乏认可带来的失落。'],
-    ['四','稳定下来，筑起一个可以喘息与扎根的空间。','停滞太久、安逸中藏着隐忧，或基础出现裂缝。'],
-    ['五','竞争、冲突或失落浮出水面，考验应对的方式。','冲突升级或选择逃避对抗，也可能是危机后的收尾。'],
-    ['六','过渡期中分享或短暂的胜利，气氛趋于缓和。','旧事重提、不对等的付出，或是迟来的认可。'],
-    ['七','需要坚持立场，防守当下已经拥有的成果。','力不从心、过度防备，或是该放弃无谓的坚持。'],
-    ['八','事情快速推进，变化接连而来，节奏加快。','进展受阻、延迟，或是方向感变得混乱。'],
-    ['九','接近完成，也带着疲惫，需要留一口气坚持。','身心俱疲、过度警惕，或是濒临崩溃边缘。'],
-    ['十','抵达顶点，收获与负担同时压在肩上。','不堪重负、该放下却仍在硬撑。'],
-    ['侍从','消息传来，带着稚嫩而真诚的学习心态。','消息延误、不成熟的判断，或是三分钟热度。'],
-    ['骑士','主动出击，带着热忱甚至急切地追求目标。','行动冲动鲁莽，或是半途而废、缺乏耐心。'],
-    ['王后','以成熟包容的姿态照料他人，也滋养自己。','情绪化、过度付出耗竭自己，或是缺乏安全感。'],
-    ['国王','承担起统领的责任，用外在权威稳住局面。','专断、滥用权力，或是责任缺位带来的失控。']
-  ];
-  const minors = [];
-  suits.forEach(s=>{
-    ranks.forEach(([rank, tip, rtip])=>{
-      minors.push({
-        name: s.suit + rank,
-        emoji: s.emoji,
-        mean: s.theme + ' · ' + tip,
-        rmean: s.rtheme + ' · ' + rtip,
-        suit: s.suit
-      });
-    });
-  });
-  return major.concat(minors);
-}
-
-function buildLenormand36(){
-  const cards = [
-    ['骑士','🐴','消息、访客或机会正在到来，事情将以较快的节奏向前推进。'],
-    ['三叶草','🍀','小而短暂的幸运，抓住眼前轻巧的机会，不必想得太复杂。'],
-    ['船','⛵','远行、跨越距离的联系，或一笔关于贸易与移动的进展。'],
-    ['房子','🏠','家庭与稳定的根基，一个可以安放归属感的私密领域。'],
-    ['树','🌳','健康与成长的根基，需要时间慢慢扎深、不能急于求成。'],
-    ['云','☁️','局势模糊不清、情绪阴晴不定，真相还没有完全显现。'],
-    ['蛇','🐍','局面复杂多绕，可能涉及诱惑、第三方或需要小心的关系。'],
-    ['棺材','⚰️','一个阶段彻底结束，释放旧事物才能让转变真正发生。'],
-    ['花束','💐','美好的邀请与欣赏正在靠近，值得被好好接收的心意。'],
-    ['镰刀','🗡️','突然的切断、决断的时刻，可能是收获也可能是风险。'],
-    ['鞭子','🪢','反复出现的摩擦或争执，需要正视而不是任由其发酵。'],
-    ['鸟','🐦','闲谈、焦虑或琐碎的信息交流，注意不要被小事扰乱心绪。'],
-    ['孩子','🧒','纯真、天真的新开始，一件事情还处在稚嫩的起步阶段。'],
-    ['狐狸','🦊','需要一些策略与精明，别把真实意图完全摆在明面上。'],
-    ['熊','🐻','权威、保护或压力的来源，力量集中在某一方手中。'],
-    ['星星','✨','清晰的希望与指引，灵感正在为下一步照亮方向。'],
-    ['鹳','🦩','正在发生的过渡与搬迁，旧的状态即将被新的取代。'],
-    ['狗','🐶','忠诚可靠的陪伴，一段值得信赖的友情或支持关系。'],
-    ['塔','🏛️','制度、边界或孤立的处境，也可能象征更高更远的视角。'],
-    ['花园','🌳','公开的社交场合，人际网络与外界关注在此汇聚。'],
-    ['山','⛰️','明显的阻碍与延迟，前方有一段需要翻越的坎坷。'],
-    ['十字路口','🛤️','面临选择与分岔，决定将带来不同的走向。'],
-    ['老鼠','🐭','悄悄的损耗与流失，无论是精力、金钱还是安全感。'],
-    ['心','❤️','情感的核心所在，一份真心实意，围绕爱与在意展开。'],
-    ['戒指','💍','承诺与契约，一段循环或已经确立的关系状态。'],
-    ['书','📖','尚未公开的秘密，或是需要学习、钻研的知识领域。'],
-    ['信','✉️','具体的信息、文件或书面往来，答案往往就在文字里。'],
-    ['男人','👨','一位男性角色，或偏外在、主动的行动力量。'],
-    ['女人','👩','一位女性角色，或偏内在、接收与感受的力量。'],
-    ['百合','🤍','成熟的和谐与平和，事情正走向安稳而不喧闹的状态。'],
-    ['太阳','🌞','活力、成功与显化，事情正朝着明朗的方向发展。'],
-    ['月亮','🌛','声誉与情绪的潮汐，你正被看见，也在意着被如何看待。'],
-    ['钥匙','🔑','关键的答案即将开启，一个长期悬而未决的问题有解了。'],
-    ['鱼','🐟','金钱与资源的流动，收入或机会正在循环起来。'],
-    ['锚','⚓','稳定的工作与长期的承诺，值得托付时间与心力。'],
-    ['十字','✝️','责任与负担并存，带着命运感的必经考验。']
-  ];
-  return cards.map(([name,emoji,mean])=>({ name, emoji, mean, suit:'雷诺曼' }));
-}
-
-const DIV_DECKS = {
-  tarot78: { label:'塔罗 78 张', build: buildTarot78, hasReversal: true },
-  lenormand36: { label:'雷诺曼 36 张', build: buildLenormand36, hasReversal: false }
-};
-
-let divState = {
-  deckType: 'tarot78',
-  shuffled: [],   // 当前洗好的牌堆（顶=可抽）
-  drawnIds: []    // 本轮已抽，防止重复（用 name+index）
-};
-
-function fisherYates(arr){
-  const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    const t = a[i]; a[i]=a[j]; a[j]=t;
-  }
-  return a;
-}
-
-function getActiveDivDeckDef(){
-  return DIV_DECKS[divState.deckType] || DIV_DECKS.tarot78;
-}
-
-function ensureDivDeckShuffled(force){
-  const def = getActiveDivDeckDef();
-  if(force || !divState.shuffled.length){
-    const base = def.build().map((c,i)=>({ ...c, _id: c.name + '#' + i }));
-    divState.shuffled = fisherYates(base);
-    divState.drawnIds = [];
-  }
-  updateDivDeckStatus();
-}
-
-function updateDivDeckStatus(){
-  const el = document.getElementById('divDeckStatus');
-  if(!el) return;
-  const def = getActiveDivDeckDef();
-  const left = divState.shuffled.length;
-  el.textContent = `当前：${def.label} · 牌堆剩余 ${left} 张 · 抽牌为纯随机洗牌后依次取顶牌`;
-}
-
-function onDivDeckChange(){
-  const sel = document.getElementById('divDeckType');
-  if(sel) divState.deckType = sel.value;
-  ensureDivDeckShuffled(true);
-  const wrap = document.getElementById('tarotResult');
-  if(wrap) wrap.innerHTML = '<div class="empty-note">已切换牌组并重新洗牌，可以抽三张了</div>';
-}
-
-function shuffleDivDeck(){
-  ensureDivDeckShuffled(true);
-  const toast = document.getElementById('saveToast');
-  if(toast){
-    toast.textContent = '已重新洗牌';
-    toast.classList.add('show');
-    setTimeout(()=>toast.classList.remove('show'), 1200);
-  }
-  updateDivDeckStatus();
-}
-
-const TAROT_POSITIONS = [
-  { key:'past', title:'第一张 · 过去 / 现状' },
-  { key:'present', title:'第二张 · 现在 / 建议' },
-  { key:'future', title:'第三张 · 走向 / 答案' }
-];
-
-async function drawTarotThree(){
-  ensureDivDeckShuffled(false);
-  const def = getActiveDivDeckDef();
-  if(divState.shuffled.length < 3){
-    // 不够三张就整副再洗一次
-    ensureDivDeckShuffled(true);
-  }
-  if(divState.shuffled.length < 3){
-    alert('牌组异常，请重新洗牌');
-    return;
-  }
-  // 从牌堆顶部依次取三张（不放回）——模拟真实抽牌
-  const drawn = [];
-  for(let i=0;i<3;i++){
-    const card = divState.shuffled.shift();
-    const reversed = def.hasReversal ? (Math.random() < 0.5) : false; // 正逆纯 50/50
-    drawn.push({
-      name: card.name,
-      emoji: card.emoji,
-      suit: card.suit || '',
-      mean: card.mean,
-      reversed,
-      position: TAROT_POSITIONS[i].title,
-      note: reversed
-        ? ('逆位：' + (card.rmean || (card.mean + ' —— 能量受阻、内收或需要反向理解。')))
-        : ('正位：' + card.mean)
-    });
-  }
-  updateDivDeckStatus();
-  const qEl = document.getElementById('tarotQuestion');
-  const question = qEl ? qEl.value.trim() : '';
-  const reading = {
-    id: uid(),
-    time: Date.now(),
-    deck: def.label,
-    question: question || '今日运势',
-    cards: drawn
-  };
-  // 先把结果显示出来，再尝试持久化——即使存储失败（比如通过 content:// 方式打开、
-  // 或者 IndexedDB 暂时不可用），本次抽牌结果依然能正常看到解析。
-  renderTarotResult(reading);
-  try{
-    tarotHistory.unshift(reading);
-    if(tarotHistory.length > 20) tarotHistory = tarotHistory.slice(0,20);
-    await sSet('tarot-history', tarotHistory);
-  }catch(err){
-    console.error('保存占卜历史失败：', err);
-  }
-  if(currentView === 'divHistory') renderDivHistoryList();
-}
-
-function renderTarotResult(reading){
-  const wrap = document.getElementById('tarotResult');
-  if(!wrap || !reading) return;
-  wrap.innerHTML = `<div class="box">
-    <div class="box-title">本次解读 · ${reading.deck||''}</div>
-    <div style="font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;">问题：${reading.question}</div>
-    ${reading.cards.map(c=>`
-      <div style="border:1px solid var(--rule);padding:12px;margin-bottom:10px;background:var(--glass-bg);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-          <span style="font-family:'Noto Serif SC',serif;font-weight:700;">${c.emoji} ${c.name}${c.reversed?'（逆位）':''}</span>
-          <span class="stamp-tag" style="transform:none;flex-shrink:0;">${c.position}</span>
-        </div>
-        ${c.suit?`<div style="font-size:11px;color:var(--ink-soft);margin-top:4px;">${c.suit}</div>`:''}
-        <div style="font-size:13px;margin-top:8px;line-height:1.55;">${c.note}</div>
-      </div>`).join('')}
-  </div>`;
-}
-
-let divHistoryOpenId = null; // 当前展开查看解析的那一条历史记录 id
-
-function toggleDivHistoryDetail(id){
-  divHistoryOpenId = (divHistoryOpenId === id) ? null : id;
-  renderDivHistoryList();
-}
-
-function renderDivHistoryList(){
-  const wrap = document.getElementById('divHistoryList');
-  if(!wrap) return;
-  wrap.innerHTML = tarotHistory.length ? tarotHistory.map(r=>{
-    const names = (r.cards||[]).map(c=>c.name+(c.reversed?'（逆位）':'')).join(' · ');
-    const isOpen = divHistoryOpenId === r.id;
-    const detail = isOpen ? `
-      <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--rule);">
-        ${(r.cards||[]).map(c=>`
-          <div style="border:1px solid var(--rule);padding:10px;margin-bottom:8px;background:var(--glass-bg);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-              <span style="font-family:'Noto Serif SC',serif;font-weight:700;">${c.emoji||''} ${c.name}${c.reversed?'（逆位）':''}</span>
-              <span class="stamp-tag" style="transform:none;flex-shrink:0;">${c.position||''}</span>
-            </div>
-            ${c.suit?`<div style="font-size:11px;color:var(--ink-soft);margin-top:4px;">${c.suit}</div>`:''}
-            <div style="font-size:13px;margin-top:8px;line-height:1.55;">${c.note}</div>
-          </div>`).join('')}
-        <div class="btn-row" style="margin-top:2px;" onclick="event.stopPropagation();">
-          <div class="btn outline" onclick="interpretDivReading('${r.id}','role')">🎭 角色解读</div>
-          <div class="btn outline" onclick="interpretDivReading('${r.id}','obj')">📖 客观解读</div>
-        </div>
-        <div data-tarot-ai-block="${r.id}" onclick="event.stopPropagation();">${r.aiText ? renderTarotAiBlockInner(r) : ''}</div>
-      </div>` : '';
-    return `<div class="list-item" style="display:block;cursor:pointer;" onclick="toggleDivHistoryDetail('${r.id}')">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
-        <div><b>${r.question}</b><div class="meta">${new Date(r.time).toLocaleString('zh-CN')} · ${r.deck||''} · ${names}</div></div>
-        <span class="del" onclick="event.stopPropagation();deleteTarotReading('${r.id}')">✕</span>
-      </div>
-      ${detail}
-    </div>`;
-  }).join('') : '<div class="empty-note">还没有抽过牌，去占卜抽牌页面试试吧</div>';
-}
-
-async function deleteTarotReading(id){
-  tarotHistory = tarotHistory.filter(r=>r.id!==id);
-  if(divHistoryOpenId === id) divHistoryOpenId = null;
-  if(currentView === 'divHistory') renderDivHistoryList();
-  try{
-    await sSet('tarot-history', tarotHistory);
-  }catch(err){
-    console.error('保存占卜历史失败：', err);
-  }
-}
-
-function renderRecipes(){
-  const sel = document.getElementById('divDeckType');
-  if(sel) sel.value = divState.deckType || 'tarot78';
-  ensureDivDeckShuffled(false);
-  const wrap = document.getElementById('tarotResult');
-  if(wrap && !wrap.innerHTML.trim()){
-    wrap.innerHTML = '<div class="empty-note">洗牌后抽三张，模拟正式占卜</div>';
-  }
-}
-function addRecipe(){ drawTarotThree(); }
 
 /* ---------- 宠物：奇遇 / 照看 可折叠 ---------- */
 
@@ -4095,7 +3896,7 @@ async function saveProfile(){
 }
 async function resetAll(){
   if(!confirm('确定要清空全部数据吗？这个操作无法撤销。')) return;
-  const keys = ['profile','chat-settings','chat-messages','cards-data','ledger-entries','period-entries','diary-entries','recipe-entries','theme-settings','moments-posts','letters','inbox-letters','call-logs','proactive-state','chat-unread','letter-unread','inbox-letter-unread','moments-unread','life-photos','status-pool','today-status','whisper-pool','today-whisper','custom-bubble-css','rec-store-migrated-v2','moyu-state','proactive-msg-settings','ai-settings','card-ai-settings','tarot-ai-settings','moment-interact-settings','splice-cards-enabled','tarot-history'];
+  const keys = ['profile','chat-settings','chat-messages','cards-data','ledger-entries','period-entries','diary-entries','theme-settings','moments-posts','letters','inbox-letters','call-logs','proactive-state','chat-unread','letter-unread','inbox-letter-unread','moments-unread','life-photos','status-pool','today-status','whisper-pool','today-whisper','custom-bubble-css','rec-store-migrated-v2','moyu-state','proactive-msg-settings','moment-interact-settings','splice-cards-enabled'];
   for(const k of keys){
     try{ if(hasCloudStorage()) await window.storage.delete(k, false); }catch(e){}
     try{ localStorage.removeItem('Charlie:'+k); }catch(e){}
@@ -4114,8 +3915,8 @@ async function exportBackup(){
   ]);
   const data = {
     profile, chatSettings, chatMessages: fullChat, cardsData, ledgerEntries, periodEntries,
-    diaryEntries, recipeEntries, tarotHistory, momentsPosts: fullMoments, letters, inboxLetters, callLogs, themeSettings, proactiveState,
-    lifePhotos: fullPhotos, statusPool, todayStatus, customBubbleCSS, moyuState, proactiveMsgSettings, momentInteractSettings, aiSettings, cardAiSettings, tarotAiSettings, spliceCardsEnabled,
+    diaryEntries, momentsPosts: fullMoments, letters, inboxLetters, callLogs, themeSettings, proactiveState,
+    lifePhotos: fullPhotos, statusPool, todayStatus, customBubbleCSS, moyuState, proactiveMsgSettings, momentInteractSettings, spliceCardsEnabled,
     exportedAt: Date.now()
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
@@ -4143,8 +3944,6 @@ function onImportBackupFile(e){
     ledgerEntries = data.ledgerEntries || [];
     periodEntries = data.periodEntries || [];
     diaryEntries = data.diaryEntries || [];
-    recipeEntries = data.recipeEntries || [];
-    tarotHistory = data.tarotHistory || [];
     const importedMoments = data.momentsPosts || [];
     letters = data.letters || [];
     inboxLetters = data.inboxLetters || [];
@@ -4158,9 +3957,6 @@ function onImportBackupFile(e){
     moyuState = data.moyuState || moyuState;
     proactiveMsgSettings = data.proactiveMsgSettings || proactiveMsgSettings;
     momentInteractSettings = data.momentInteractSettings || momentInteractSettings;
-    aiSettings = data.aiSettings || aiSettings;
-    cardAiSettings = data.cardAiSettings || cardAiSettings;
-    tarotAiSettings = data.tarotAiSettings || tarotAiSettings;
     if(typeof data.spliceCardsEnabled === 'boolean') spliceCardsEnabled = data.spliceCardsEnabled;
     await sSet('profile', profile);
     await sSet('chat-settings', chatSettings);
@@ -4168,8 +3964,6 @@ function onImportBackupFile(e){
     await sSet('ledger-entries', ledgerEntries);
     await sSet('period-entries', periodEntries);
     await sSet('diary-entries', diaryEntries);
-    await sSet('recipe-entries', recipeEntries);
-    await sSet('tarot-history', tarotHistory);
     await sSet('letters', letters);
     await sSet('inbox-letters', inboxLetters);
     await sSet('call-logs', callLogs);
@@ -4181,9 +3975,6 @@ function onImportBackupFile(e){
             await sSet('moyu-state', moyuState);
     await sSet('proactive-msg-settings', proactiveMsgSettings);
     await sSet('moment-interact-settings', momentInteractSettings);
-    await sSet('ai-settings', aiSettings);
-    await sSet('card-ai-settings', cardAiSettings);
-    await sSet('tarot-ai-settings', tarotAiSettings);
     await sSet('splice-cards-enabled', spliceCardsEnabled);
     // 恢复到各自专用的逐条记录表：先清空旧的，再把备份里的全部记录整体写进去
     await recClear('chatMessages'); await recPutMany('chatMessages', importedChat.map((m,i)=> m.time?m:{...m,time:Date.now()-(importedChat.length-i)}));
@@ -4196,7 +3987,7 @@ function onImportBackupFile(e){
     applyTheme();
     applyCustomBubbleCSSToPage();
     renderHomeProfile(); renderChat(); renderCardsView(); renderLedger(); renderPeriod();
-    renderRecipes(); renderDiary(); renderBeautify(); renderMoments(); renderLetters();
+    renderDiary(); renderBeautify(); renderMoments(); renderLetters();
     renderInboxLetters(); renderCallLog(); renderLifePhotos(); renderTodayStatusHome();
     resumeLetterTimers();
     resumeInboxLetterReplyTimers();
@@ -5001,350 +4792,8 @@ async function doSearch(){
 })();
 
 
-/* ============================================================
-   AI 配置 + 字卡解读 + 塔罗梦占/现占
-   ============================================================ */
-let aiSettings = {
-  provider: 'deepseek',
-  baseUrl: 'https://api.deepseek.com/v1',
-  apiKey: '',
-  model: 'deepseek-chat',
-  enabled: false
-};
-// 字卡与塔罗的 AI 设定完全独立，互不读取。
-let cardAiSettings = { prompt: '' };
-let tarotAiSettings = { prompt: '' };
-const AI_PROVIDER_PRESETS = {
-  openai:    { baseUrl: 'https://api.openai.com/v1', model: 'gpt-4o-mini', label: 'OpenAI' },
-  deepseek:  { baseUrl: 'https://api.deepseek.com/v1', model: 'deepseek-chat', label: 'DeepSeek 官方' },
-  silicon:   { baseUrl: 'https://api.siliconflow.cn/v1', model: 'deepseek-ai/DeepSeek-V3', label: '硅基流动' },
-  dashscope: { baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1', model: 'deepseek-v4-flash', label: '阿里云百炼 (DashScope)' },
-  custom:    { baseUrl: '', model: '', label: '自定义' }
-};
-// 常用模型名建议（仅供下拉快选，模型名称输入框本身不限于此列表，可任意填写）
-const AI_MODEL_SUGGESTIONS = [
-  'deepseek-chat', 'deepseek-reasoner',
-  'deepseek-v4', 'deepseek-v4-flash', 'deepseek-v3',
-  'qwen-turbo', 'qwen-plus', 'qwen-max',
-  'gpt-4o-mini', 'gpt-4o',
-  'deepseek-ai/DeepSeek-V3'
-];
-
-async function loadAiSettings(){
-  const loaded = await sGet('ai-settings', aiSettings);
-  aiSettings = loaded || aiSettings;
-  if(!aiSettings.provider) aiSettings.provider = 'deepseek';
-  if(typeof aiSettings.enabled !== 'boolean') aiSettings.enabled = !!(aiSettings.apiKey);
-  const legacyPrompt = typeof aiSettings.characterPrompt === 'string' ? aiSettings.characterPrompt :
-                       (typeof aiSettings.rolePrompt === 'string' ? aiSettings.rolePrompt : '');
-  cardAiSettings = await sGet('card-ai-settings', { prompt: '' });
-  tarotAiSettings = await sGet('tarot-ai-settings', { prompt: '' });
-  if(!cardAiSettings || typeof cardAiSettings !== 'object') cardAiSettings = { prompt: '' };
-  if(!tarotAiSettings || typeof tarotAiSettings !== 'object') tarotAiSettings = { prompt: '' };
-  // 从旧版共用提示词平滑迁移一次；迁移后两套设定独立保存。
-  if(typeof cardAiSettings.prompt !== 'string' || !cardAiSettings.prompt) cardAiSettings.prompt = legacyPrompt;
-  if(typeof tarotAiSettings.prompt !== 'string' || !tarotAiSettings.prompt) tarotAiSettings.prompt = legacyPrompt;
-  delete aiSettings.characterPrompt;
-  delete aiSettings.rolePrompt;
-  await sSet('ai-settings', aiSettings);
-  await sSet('card-ai-settings', cardAiSettings);
-  await sSet('tarot-ai-settings', tarotAiSettings);
-}
-async function saveAiSettingsFromForm(){
-  const provider = (document.getElementById('aiProvider')||{}).value || 'deepseek';
-  aiSettings.provider = provider;
-  aiSettings.baseUrl = ((document.getElementById('aiBaseUrl')||{}).value || '').trim().replace(/\/$/, '');
-  aiSettings.apiKey = ((document.getElementById('aiApiKey')||{}).value || '').trim();
-  aiSettings.model = ((document.getElementById('aiModel')||{}).value || '').trim();
-  cardAiSettings.prompt = ((document.getElementById('cardAiPrompt')||{}).value || '').trim();
-  tarotAiSettings.prompt = ((document.getElementById('tarotAiPrompt')||{}).value || '').trim();
-  aiSettings.enabled = !!(aiSettings.apiKey && aiSettings.baseUrl && aiSettings.model);
-  await sSet('ai-settings', aiSettings);
-  await sSet('card-ai-settings', cardAiSettings);
-  await sSet('tarot-ai-settings', tarotAiSettings);
-  alert(aiSettings.enabled ? 'AI 配置已保存' : '已保存，但 Key / 地址 / 模型未填全，解读功能暂不可用');
-  closeOverlay();
-}
-function onAiProviderChange(){
-  const p = document.getElementById('aiProvider').value;
-  const preset = AI_PROVIDER_PRESETS[p] || AI_PROVIDER_PRESETS.custom;
-  if(p !== 'custom'){
-    const urlEl = document.getElementById('aiBaseUrl');
-    const modelEl = document.getElementById('aiModel');
-    if(urlEl && preset.baseUrl) urlEl.value = preset.baseUrl;
-    if(modelEl && preset.model) modelEl.value = preset.model;
-  }
-}
-function openAiConfigPanel(){
-  openOverlay(`
-    <div class="drawer-head"><h3>🤖 AI 字卡 / 占卜配置</h3><span class="close-x" onclick="closeOverlay()">✕</span></div>
-    <p style="font-size:12px;color:var(--ink-soft);margin:0 0 10px;">配置兼容 OpenAI 格式的 API 后，可在聊天里解读字卡含义，并在塔罗里使用「现占」AI 解牌。Key 只存在本机。</p>
-    <label class="field">API 服务商</label>
-    <select id="aiProvider" onchange="onAiProviderChange()">
-      <option value="openai" ${aiSettings.provider==='openai'?'selected':''}>OpenAI</option>
-      <option value="deepseek" ${aiSettings.provider==='deepseek'?'selected':''}>DeepSeek 官方</option>
-      <option value="silicon" ${aiSettings.provider==='silicon'?'selected':''}>硅基流动</option>
-      <option value="dashscope" ${aiSettings.provider==='dashscope'?'selected':''}>阿里云百炼 (DashScope)</option>
-      <option value="custom" ${aiSettings.provider==='custom'?'selected':''}>自定义</option>
-    </select>
-    <label class="field">API Base URL</label>
-    <input type="text" id="aiBaseUrl" value="${(aiSettings.baseUrl||'').replace(/"/g,'&quot;')}" placeholder="https://api.deepseek.com/v1">
-    <label class="field">API Key</label>
-    <input type="password" id="aiApiKey" value="${(aiSettings.apiKey||'').replace(/"/g,'&quot;')}" placeholder="sk-…">
-    <label class="field">模型名称</label>
-    <input type="text" id="aiModel" list="aiModelSuggestions" value="${(aiSettings.model||'').replace(/"/g,'&quot;')}" placeholder="deepseek-chat / deepseek-v4-flash …">
-    <datalist id="aiModelSuggestions">
-      ${AI_MODEL_SUGGESTIONS.map(m=>`<option value="${m}"></option>`).join('')}
-    </datalist>
-    <div style="font-size:11px;color:var(--ink-soft);margin-top:6px;">模型名称可自由填写，不限于下拉建议里的几个——只要所选服务商支持该模型 ID 即可，比如 DeepSeek 的 v4/v4-flash、reasoner，或阿里云百炼下的其它模型。</div>
-    <label class="field" style="margin-top:12px;">🎴 字卡解读设定提示词</label>
-    <textarea id="cardAiPrompt" rows="5" placeholder="只用于字卡 AI 解读。填写你希望 AI 如何理解、回应和扮演字卡中的角色。">${escHtml(cardAiSettings.prompt||'')}</textarea>
-    <div style="font-size:11px;color:var(--ink-soft);margin-top:4px;">只影响「字卡 AI 解读」，不会影响塔罗解读。</div>
-    <label class="field" style="margin-top:12px;">🔮 塔罗角色解读设定提示词</label>
-    <textarea id="tarotAiPrompt" rows="5" placeholder="只用于塔罗的「角色解读」。填写角色身份、性格、关系、说话方式、世界观等。">${escHtml(tarotAiSettings.prompt||'')}</textarea>
-    <div style="font-size:11px;color:var(--ink-soft);margin-top:4px;">只影响塔罗「角色解读」。塔罗「客观解读」不会读取这里的设定。</div>
-    <div style="font-size:11px;color:var(--ink-soft);margin-top:4px;">部分浏览器可能因跨域（CORS）无法直连某些 API；若失败可换支持浏览器调用的接口，或自建中转。</div>
-    <div class="btn-row" style="margin-top:14px;">
-      <div class="btn" onclick="saveAiSettingsFromForm()">保存</div>
-      <div class="btn outline" onclick="testAiConnection()">测试连接</div>
-    </div>
-  `);
-}
-async function callChatCompletion(messages, opts){
-  opts = opts || {};
-  if(!aiSettings.apiKey || !aiSettings.baseUrl || !aiSettings.model){
-    throw new Error('请先在 AI 配置里填好 Base URL、API Key 和模型');
-  }
-  const url = aiSettings.baseUrl.replace(/\/$/, '') + '/chat/completions';
-  const body = {
-    model: aiSettings.model,
-    messages,
-    temperature: opts.temperature != null ? opts.temperature : 0.7,
-    max_tokens: opts.max_tokens || 1200
-  };
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + aiSettings.apiKey
-    },
-    body: JSON.stringify(body)
-  });
-  if(!res.ok){
-    let detail = '';
-    try{ detail = await res.text(); }catch(e){}
-    throw new Error('API 请求失败 ('+res.status+') ' + (detail||'').slice(0,200));
-  }
-  const data = await res.json();
-  const content = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
-  if(!content) throw new Error('API 返回了空内容');
-  return content.trim();
-}
-async function testAiConnection(){
-  // 先把表单值临时写进内存再测
-  aiSettings.provider = (document.getElementById('aiProvider')||{}).value || aiSettings.provider;
-  aiSettings.baseUrl = ((document.getElementById('aiBaseUrl')||{}).value || '').trim().replace(/\/$/, '');
-  aiSettings.apiKey = ((document.getElementById('aiApiKey')||{}).value || '').trim();
-  aiSettings.model = ((document.getElementById('aiModel')||{}).value || '').trim();
-  aiSettings.rolePrompt = ((document.getElementById('aiRolePrompt')||{}).value || '').trim();
-  try{
-    const reply = await callChatCompletion([
-      { role:'system', content:'你只回复「ok」两个字母。' },
-      { role:'user', content:'ping' }
-    ], { max_tokens: 8, temperature: 0 });
-    alert('连接成功：' + reply.slice(0,40));
-  }catch(err){
-    alert('连接失败：' + (err && err.message ? err.message : err));
-  }
-}
-
-/* ---- 字卡 AI 解读（聊天消息）：AI 扮演角色本人，第一人称俏皮回应字卡内容 ---- */
-async function interpretCardMessage(msgId){
-  const msg = (chatMessages||[]).find(m=>m.id===msgId);
-  if(!msg || !msg.content){ alert('找不到这条消息'); return; }
-  if(!aiSettings.apiKey){
-    openAiConfigPanel();
-    return;
-  }
-  // 取前后几条文本做上下文
-  const idx = chatMessages.findIndex(m=>m.id===msgId);
-  const ctx = chatMessages.slice(Math.max(0, idx-6), idx+1)
-    .filter(m=> (m.type==='text'||!m.type) && m.content)
-    .map(m=>{
-      const who = m.from==='user' ? (profile.myName||'我') : (chatSettings.companionName||'TA');
-      return who + '：' + m.content;
-    }).join('\n');
-  const name = chatSettings.companionName || 'TA';
-  const myName = profile.myName || '我';
-  openOverlay(`
-    <div class="drawer-head"><h3>🤖 ${escHtml(name)}的解读</h3><span class="close-x" onclick="closeOverlay()">✕</span></div>
-    <div style="font-size:12.5px;color:var(--ink-soft);margin-bottom:8px;">字卡原文</div>
-    <div class="box" style="font-size:14px;line-height:1.55;">${escHtml(msg.content)}</div>
-    <div id="aiInterpretBody" class="card-reply-box" style="margin-top:10px;min-height:80px;">正在解读…</div>
-  `);
-  try{
-    const rolePrompt = (aiSettings.rolePrompt||'').trim();
-    const system = [
-      rolePrompt,
-      `你现在负责解读「${name}」发出的字卡。对方是「${myName}」，请根据上面的角色设定，以「${name}」的第一人称回应最后一条字卡。保持角色设定一致，不要擅自新增与设定冲突的人格特征。`,
-      '输出自然的角色回应，不要写成旁观者分析或分点说明；只输出可以直接对话使用的内容。只用中文。'
-    ].filter(Boolean).join('\n\n');
-    const user = `最近对话：\n${ctx}\n\n请以「${name}」第一人称回应最后一条字卡「${msg.content}」。`;
-    const result = await callChatCompletion([
-      { role:'system', content: system },
-      { role:'user', content: user }
-    ], { temperature: 0.85, max_tokens: 400 });
-    const body = document.getElementById('aiInterpretBody');
-    if(body){ body.textContent = result; }
-  }catch(err){
-    const body = document.getElementById('aiInterpretBody');
-    if(body){ body.classList.remove('card-reply-box'); body.style.color='var(--rouge)'; body.textContent = '解读失败：' + (err && err.message ? err.message : err); }
-  }
-}
 function escHtml(s){
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-/* ---- 塔罗：牌阵 + 梦占/现占 ---- */
-// divMode: dream_role | dream_obj | real_ai
-// divSpread: 1 | 3 | 5
-if(!divState.shuffled) divState.shuffled = [];
-divState.spread = divState.spread || 3;
-
-function getSpreadPositions(n){
-  if(n===1) return ['核心指引'];
-  if(n===5) return ['现状','挑战','过去影响','建议','可能结果'];
-  return ['过去','现在','未来'];
-}
-async function drawTarotSpread(){
-  const qEl = document.getElementById('tarotQuestion');
-  const question = (qEl && qEl.value || '').trim() || '今日指引';
-  const spreadEl = document.getElementById('divSpread');
-  const spread = parseInt((spreadEl && spreadEl.value) || divState.spread || 3, 10);
-  divState.spread = spread;
-  ensureDivDeckShuffled(false);
-  const deck = divState.shuffled || [];
-  if(deck.length < spread){
-    alert('牌库不足，请先洗牌');
-    return;
-  }
-  const positions = getSpreadPositions(spread);
-  const drawn = [];
-  for(let i=0;i<spread;i++){
-    if(!divState.shuffled.length) ensureDivDeckShuffled(true);
-    const c = divState.shuffled.shift();
-    if(!c) break;
-    const reversed = Math.random() < 0.5;
-    drawn.push({
-      name: c.name, emoji: c.emoji||'', suit: c.suit||'',
-      reversed,
-      position: positions[i],
-      note: reversed
-        ? ('逆位：' + (c.rmean || c.rev || ((c.mean||c.up||'') + ' —— 能量受阻、内收或需要反向理解。')))
-        : ('正位：' + (c.mean || c.up || c.rmean || ''))
-    });
-  }
-  updateDivDeckStatus();
-
-  // 抽完先只展示客观牌意，AI 解读留给后面的按钮单独触发
-  const reading = {
-    id: uid(),
-    question,
-    time: Date.now(),
-    deck: divState.deckType === 'lenormand36' ? '雷诺曼36' : '塔罗78',
-    spread,
-    cards: drawn,
-    aiText: null,
-    aiVoice: null
-  };
-
-  tarotHistory.unshift(reading);
-  if(tarotHistory.length > 80) tarotHistory = tarotHistory.slice(0,80);
-  try{ await sSet('tarot-history', tarotHistory); }catch(e){}
-
-  const wrap = document.getElementById('tarotResult');
-  if(wrap) wrap.innerHTML = renderTarotResultHtml(reading);
-}
-
-function renderTarotResultHtml(reading){
-  const cardsHtml = (reading.cards||[]).map(c=>`
-    <div style="border:1px solid var(--rule);padding:12px;margin-bottom:10px;background:var(--glass-bg);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-        <span style="font-family:'Noto Serif SC',serif;font-weight:700;font-size:15px;">${c.emoji||''} ${c.name}${c.reversed?'（逆位）':''}</span>
-        <span class="stamp-tag" style="transform:none;flex-shrink:0;">${c.position||''}</span>
-      </div>
-      ${c.suit?`<div style="font-size:11px;color:var(--ink-soft);margin-top:4px;">${c.suit}</div>`:''}
-      <div style="font-size:13px;margin-top:8px;line-height:1.55;">${c.note||''}</div>
-    </div>`).join('');
-  const aiBlockHtml = reading.aiText ? renderTarotAiBlockInner(reading) : '';
-  return `
-    <div class="box">
-      <div style="font-family:'Noto Serif SC',serif;font-weight:700;margin-bottom:6px;">${escHtml(reading.question||'')}</div>
-      <div style="font-size:11.5px;color:var(--ink-soft);margin-bottom:12px;">${reading.deck||''} · ${reading.spread||3} 张</div>
-      ${cardsHtml}
-      <div class="btn-row" style="margin-top:2px;">
-        <div class="btn outline" onclick="interpretDivReading('${reading.id}','role')">🎭 角色解读</div>
-        <div class="btn outline" onclick="interpretDivReading('${reading.id}','obj')">📖 客观解读</div>
-      </div>
-      <div data-tarot-ai-block="${reading.id}">${aiBlockHtml}</div>
-    </div>`;
-}
-
-function renderTarotAiBlockInner(reading){
-  const name = chatSettings.companionName || 'TA';
-  const label = reading.aiVoice==='role' ? ('🎭 角色解读 · ' + name) : '📖 客观解读';
-  return `<div class="card-reply-box" style="margin-top:10px;white-space:pre-wrap;">
-    <div style="font-size:11px;color:var(--ink-soft);margin-bottom:6px;">${escHtml(label)}</div>
-    ${escHtml(reading.aiText||'')}
-  </div>`;
-}
-
-/* ---- 塔罗 AI 解读：抽完牌后单独触发，可在「角色」/「客观」之间来回切换重新生成 ---- */
-function tarotAiBlockEls(readingId){
-  return Array.from(document.querySelectorAll('[data-tarot-ai-block="'+readingId+'"]'));
-}
-async function interpretDivReading(readingId, voice){
-  const reading = tarotHistory.find(r=>r.id===readingId);
-  if(!reading){ alert('找不到这次占卜记录'); return; }
-  if(!aiSettings.apiKey){ openAiConfigPanel(); return; }
-  const blockEls = tarotAiBlockEls(readingId);
-  blockEls.forEach(el=>{ el.innerHTML = `<div class="card-reply-box" style="margin-top:10px;">正在解读…</div>`; });
-  try{
-    const name = chatSettings.companionName || 'TA';
-    const myName = profile.myName || '我';
-    const cardDesc = (reading.cards||[]).map(c=>`${c.position}：${c.emoji||''}${c.name}${c.reversed?'（逆位）':''} —— ${c.note}`).join('\n');
-    let system, temperature;
-    if(voice === 'role'){
-      const rolePrompt = (aiSettings.rolePrompt||'').trim();
-      system = [
-        rolePrompt,
-        `你现在负责解读一次塔罗抽牌。对方是「${myName}」，请以「${name}」的第一人称回应，并结合牌面客观含义说明这几张牌可能在说什么。严格遵循上面的角色设定，不要擅自新增与设定冲突的人格特征。`,
-        '内容必须基于牌面展开，不要脱离牌面瞎编，不要写成分点列表；用自然中文完成回应。'
-      ].filter(Boolean).join('\n\n');
-      temperature = 0.85;
-    } else {
-      system = `你是专业但温柔的塔罗解读师，结合牌面客观含义给出连贯解读。用中文，结构清晰：总览、逐张要点、综合建议。不要装神弄鬼，可在结尾简短提醒仅供娱乐参考。`;
-      temperature = 0.7;
-    }
-    const user = `问题：${reading.question||'今日指引'}\n牌阵（${(reading.cards||[]).length}张，${reading.deck||''}）：\n${cardDesc}`;
-    const aiText = await callChatCompletion([
-      { role:'system', content: system },
-      { role:'user', content: user }
-    ], { temperature, max_tokens: 1200 });
-    reading.aiText = aiText;
-    reading.aiVoice = voice;
-    try{ await sSet('tarot-history', tarotHistory); }catch(e){}
-    tarotAiBlockEls(readingId).forEach(el=>{ el.innerHTML = renderTarotAiBlockInner(reading); });
-  }catch(err){
-    tarotAiBlockEls(readingId).forEach(el=>{ el.innerHTML = `<div class="card-reply-box" style="margin-top:10px;color:var(--rouge);">解读失败：${escHtml((err&&err.message)||String(err))}</div>`; });
-  }
-}
-
-// 兼容旧入口
-async function drawTarotThree(){ 
-  const se = document.getElementById('divSpread');
-  if(se) se.value = '3';
-  return drawTarotSpread();
 }
 
 </script>
